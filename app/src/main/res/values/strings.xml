@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">BuyBakery</string>
+    <string name="SignIn">Sign In</string>
+    <string name="SignUp">Sign Up</string>
+    <string name="name">ชื่อ</string>
+    <string name="user">ชื่อผู้ใช้งาน</string>
+    <string name="password">รหัสผ่าน</string>
+    <string name="id_card">บัตรประชาชน</string>
+
+</resources>
