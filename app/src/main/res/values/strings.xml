@@ -6,5 +6,6 @@
     <string name="user">ชื่อผู้ใช้งาน</string>
     <string name="password">รหัสผ่าน</string>
     <string name="id_card">บัตรประชาชน</string>
+    <string name="ResetId">ลืมรหัสผ่าน</string>
 
 </resources>
