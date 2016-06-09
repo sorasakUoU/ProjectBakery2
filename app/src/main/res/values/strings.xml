@@ -8,4 +8,6 @@
     <string name="id_card">บัตรประชาชน</string>
     <string name="ResetId">ลืมรหัสผ่าน</string>
 
+    <string name="receive">ใบเสร็จรับเงิน</string>
+
 </resources>

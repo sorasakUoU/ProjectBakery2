@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.http.HttpResponseCache;
+import android.os.AsyncTask;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,6 +12,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -28,7 +33,9 @@ public class MainActivity extends AppCompatActivity {
 
     // Explicit
     private EditText userEditText, passwordEditText;
-    private String userString, passwordString;
+    private String userString, passwordString, passwordTrueString;
+    private String[] myUserStrings, myPasswordString;
+    private boolean userABoolean = false;
     private MyManage myManage;
 
     @Override
@@ -37,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //Bind widget
+        userEditText = (EditText) findViewById(R.id.txtUser);
+        passwordEditText = (EditText) findViewById(R.id.txtPassword);
         bindWidget();
 
         myManage = new MyManage(this);
@@ -48,6 +57,80 @@ public class MainActivity extends AppCompatActivity {
         synJSon();
 
     } // Main Metthod
+
+    public class ConnectedJSON extends AsyncTask<Void, Void, String> {
+
+        @Override
+        protected String doInBackground(Void... voids) {
+
+            try {
+                OkHttpClient okHttpClient = new OkHttpClient();
+                Request.Builder builder = new Request.Builder();
+                Request request = builder.url("http://swiftcodingthai.com/bic/get_user_nice.php").build();
+                Response response = okHttpClient.newCall(request).execute();
+                return response.body().string();
+
+
+
+            } catch (Exception e) {
+                return null;
+            }
+
+
+        } //doTnBack
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+            try {
+
+                JSONArray jsonArray = new JSONArray(s);
+                myUserStrings = new String[jsonArray.length()];
+                myPasswordString = new String[jsonArray.length()];
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    myUserStrings[i] = jsonObject.getString("User");
+                    myPasswordString[i] = jsonObject.getString("Password");
+
+                    if (userString.equals(myUserStrings[i])) {
+                        //UserTrue
+                        userABoolean = true;
+                        passwordTrueString = myPasswordString[i];
+                    }
+
+                } // for
+
+                if (userABoolean) {
+
+                    if (passwordString.equals(passwordTrueString)) {
+                        Toast.makeText(MainActivity.this, "Welcome", Toast.LENGTH_SHORT).show();
+
+                        Intent intent = new Intent(MainActivity.this, OrderActivity.class);
+                        startActivity(intent);
+
+
+                    } else {
+                        Toast.makeText(MainActivity.this, "Erorr", Toast.LENGTH_SHORT).show();
+                    }
+
+
+                } else {
+                    Toast.makeText(MainActivity.this, "User False", Toast.LENGTH_SHORT).show();
+                }
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+        } // onPost
+    } //Connected Class
+
+
 
     private void synJSon() {
 
@@ -159,13 +242,15 @@ public class MainActivity extends AppCompatActivity {
 
         // Check Space
         if (userString.equals("") || passwordString.equals("")) {
+            Toast.makeText(this, "Have Space", Toast.LENGTH_SHORT).show();
             // Have space
-            MyAlertDialog myAlertDialog = new MyAlertDialog();
-            myAlertDialog.myDialog(this, "มีช่องว่าง", "กรุณากรอกทุกช่องครับ");
+            //MyAlertDialog myAlertDialog = new MyAlertDialog();
+            //myAlertDialog.myDialog(this, "มีช่องว่าง", "กรุณากรอกทุกช่องครับ");
         } else {
 
             // No Space
-            checkUser();
+            ConnectedJSON connectedJSON = new ConnectedJSON();
+            connectedJSON.execute();
 
         }
 
